@@ -33,14 +33,14 @@ before_deploy:
   - docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}"
   - docker tag "${IMAGE_NAME}" "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${ENVOY_VERSION}_${CONSUL_VERSION}"
   - |
-    if [${LATEST}]; then
+    if [ -n ${LATEST} ]; then
       docker tag "${IMAGE_NAME}" "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
     fi
 deploy:
   provider: script
   script: |
     docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${ENVOY_VERSION}_${CONSUL_VERSION}"
-    if [${LATEST}]; then
+    if [ -n ${LATEST} ]; then
       docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
     fi
   on:
