@@ -9,14 +9,14 @@ env:
     - CONSUL_IMAGE_NAME=consul
     - IMAGE_NAME=envoy-consul
   matrix:
-    - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.9.1
-    - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.10.0
-    - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.11.1
-    - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.9.1
-    - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.10.0
-    - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.11.1
-    - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.9.1
-    - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.10.0
+    - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.9.1 LATEST=false
+    - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.10.0 LATEST=false
+    - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.11.1 LATEST=false
+    - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.9.1 LATEST=false
+    - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.10.0 LATEST=false
+    - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.11.1 LATEST=false
+    - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.9.1 LATEST=false
+    - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.10.0 LATEST=false
     - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.11.1 LATEST=true
 
 before_script:
@@ -32,16 +32,11 @@ after_script:
 before_deploy:
   - docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}"
   - docker tag "${IMAGE_NAME}" "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${ENVOY_VERSION}_${CONSUL_VERSION}"
-  - |
-    if [ -z ${LATEST+x} ]; then
-      docker tag "${IMAGE_NAME}" "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
+  - if [ ${LATEST} ]; then
+    docker tag "${IMAGE_NAME}" "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest";
     fi
 deploy:
   provider: script
-  script: |
-    docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${ENVOY_VERSION}_${CONSUL_VERSION}"
-    if [ -z ${LATEST+x} ]; then
-      docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
-    fi
+  script: docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${ENVOY_VERSION}_${CONSUL_VERSION}" && if [ ${LATEST} ]; then docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"; fi
   on:
     branch: master
