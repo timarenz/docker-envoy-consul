@@ -7,24 +7,41 @@ env:
   global:
     - ENVOY_IMAGE_NAME=envoyproxy/envoy
     - CONSUL_IMAGE_NAME=consul
-    - DOCKER_HUB_USERNAME=timarenz
+    - IMAGE_NAME=envoy-consul
   matrix:
     - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.9.1
-    - CONSUL_VERSION=1.5.2 NVOY_VERSION=v1.10.0
+    - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.10.0
     - CONSUL_VERSION=1.5.2 ENVOY_VERSION=v1.11.1
     - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.9.1
-    - CONSUL_VERSION=1.5.3 NVOY_VERSION=v1.10.0
+    - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.10.0
     - CONSUL_VERSION=1.5.3 ENVOY_VERSION=v1.11.1
     - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.9.1
-    - CONSUL_VERSION=1.6.0 NVOY_VERSION=v1.10.0
-    - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.11.1
+    - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.10.0
+    - CONSUL_VERSION=1.6.0 ENVOY_VERSION=v1.11.1 LATEST=true
 
 before_script:
   - docker pull ${ENVOY_IMAGE_NAME}:${ENVOY_VERSION}
   - docker pull ${CONSUL_IMAGE_NAME}:${CONSUL_VERSION}
 
 script:
-  - docker build --pull --tag ${DOCKER_HUB_USERNAME}/envoy-consul:${ENVOY_VERSION}_${CONSUL_VERSION} --build-arg CONSUL_IMAGE=${CONSUL_IMAGE_NAME}:${CONSUL_VERSION} --build-arg ENVOY_IMAGE=${ENVOY_IMAGE_NAME}:${ENVOY_VERSION} .
+  - docker build --pull --tag ${IMAGE_NAME} --build-arg CONSUL_IMAGE=${CONSUL_IMAGE_NAME}:${CONSUL_VERSION} --build-arg ENVOY_IMAGE=${ENVOY_IMAGE_NAME}:${ENVOY_VERSION} .
 
 after_script:
   - docker images
+
+before_deploy:
+  - docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}"
+  - docker tag "${IMAGE_NAME}" "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${ENVOY_VERSION}_${CONSUL_VERSION}"
+  - |
+    if [${LATEST}]; then
+      docker tag "${IMAGE_NAME}" "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
+    fi
+deploy:
+  provider: script
+  script: |
+    docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${ENVOY_VERSION}_${CONSUL_VERSION}"
+    if [${LATEST}]; then
+      docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"
+    fi
+  on:
+    branch: master
