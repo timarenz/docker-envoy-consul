@@ -1,0 +1,29 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+env:
+  - ENVOY_IMAGE_NAME=envoyproxy/envoy
+  - ENVOY_VERSION=1.9.1
+  - ENVOY_VERSION=1.10.0
+  - ENVOY_VERSION=1.11.1
+  - CONSUL_IMAGE_NAME=consul
+  - CONSUL_VERSION=1.5.2
+  - CONSUL_VERSION=1.5.3
+  - CONSUL_VERSION=1.6.0
+  - DOCKER_HUB_USERNAME=timarenz
+
+before_script:
+  - docker pull ${ENVOY_IMAGE_NAME}:${ENVOY_VERSION}
+  - docker pull ${CONSUL_IMAGE_NAME}:${CONSUL_VERSION}
+
+script:
+  - docker build --pull \
+    --tag ${DOCKER_HUB_USERNAME}/envoy-consul:${ENVOY_VERSION}_${CONSUL_VERSION} \
+    --build-arg CONSUL_IMAGE=${CONSUL_IMAGE_NAME}:${CONSUL_VERSION} \
+    --build-arg ENVOY_IMAGE=${ENVOY_IMAGE_NAME}:${ENVOY_VERSION \
+    .
+
+after_script:
+  - docker images
