@@ -38,7 +38,6 @@ before_deploy:
     fi
 deploy:
   provider: script
-  script: |
-    docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${ENVOY_VERSION}_${CONSUL_VERSION}"; if (${LATEST}); then docker push "${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:latest"; fi
+  script: bash push.sh
   on:
     branch: master
