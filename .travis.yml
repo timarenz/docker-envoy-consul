@@ -1,5 +1,6 @@
 language: generic
-sudo: required
+os: linux
+dist: xenial
 services:
   - docker
 
@@ -61,10 +62,10 @@ env:
     # - CONSUL_VERSION=1.6.3 ENVOY_VERSION=v1.9.1 LATEST=false
     # - CONSUL_VERSION=1.6.3 ENVOY_VERSION=v1.10.0 LATEST=false
     # - CONSUL_VERSION=1.6.3 ENVOY_VERSION=v1.11.1 LATEST=false
-    - CONSUL_VERSION=1.6.4 ENVOY_VERSION=v1.8.0 LATEST=false
-    - CONSUL_VERSION=1.6.4 ENVOY_VERSION=v1.9.1 LATEST=false
-    - CONSUL_VERSION=1.6.4 ENVOY_VERSION=v1.10.0 LATEST=false
-    - CONSUL_VERSION=1.6.4 ENVOY_VERSION=v1.11.1 LATEST=false
+    # - CONSUL_VERSION=1.6.4 ENVOY_VERSION=v1.8.0 LATEST=false
+    # - CONSUL_VERSION=1.6.4 ENVOY_VERSION=v1.9.1 LATEST=false
+    # - CONSUL_VERSION=1.6.4 ENVOY_VERSION=v1.10.0 LATEST=false
+    # - CONSUL_VERSION=1.6.4 ENVOY_VERSION=v1.11.1 LATEST=false
     # - CONSUL_VERSION=1.7.0 ENVOY_VERSION=v1.10.0 LATEST=false
     # - CONSUL_VERSION=1.7.0 ENVOY_VERSION=v1.11.2 LATEST=false
     # - CONSUL_VERSION=1.7.0 ENVOY_VERSION=v1.12.2 LATEST=false
@@ -77,6 +78,10 @@ env:
     # - CONSUL_VERSION=1.7.2 ENVOY_VERSION=v1.11.2 LATEST=false
     # - CONSUL_VERSION=1.7.2 ENVOY_VERSION=v1.12.2 LATEST=false
     # - CONSUL_VERSION=1.7.2 ENVOY_VERSION=v1.13.0 LATEST=true
+    - CONSUL_VERSION=1.7.3 ENVOY_VERSION=v1.10.0 LATEST=false
+    - CONSUL_VERSION=1.7.3 ENVOY_VERSION=v1.11.2 LATEST=false
+    - CONSUL_VERSION=1.7.3 ENVOY_VERSION=v1.12.2 LATEST=false
+    - CONSUL_VERSION=1.7.3 ENVOY_VERSION=v1.13.0 LATEST=true
 
 before_script:
   - docker pull ${ENVOY_IMAGE_NAME}:${ENVOY_VERSION}
@@ -84,9 +89,8 @@ before_script:
 
 script:
   - docker build --pull --tag ${IMAGE_NAME} --build-arg CONSUL_IMAGE=${CONSUL_IMAGE_NAME}:${CONSUL_VERSION} --build-arg ENVOY_IMAGE=${ENVOY_IMAGE_NAME}:${ENVOY_VERSION} .
-
-after_script:
-  - docker images
+  - docker run -it --entrypoint /bin/consul ${IMAGE_NAME} version
+  - docker run -it --entrypoint /usr/local/bin/envoy ${IMAGE_NAME} --version
 
 before_deploy:
   - docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}"
