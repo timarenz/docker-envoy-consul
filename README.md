@@ -79,7 +79,7 @@ docker run -d --network host --name ingress-gateway timarenz/envoy-consul:v1.14.
 ### Remarks
 
 As you see the Docker images are run with the `--network host`) option. This is required for as the Consul binary and Envoy proxy needs to talk to the Consul API and GRPC endpoint.
-It is a best practices to always talk to a local Consul agent, however you could address a different API endpoint using the `-http-addr=<addr>` (<https://www.consul.io/docs/commands/connect/envoy#http-addr>) parameter and the `-grpc-addr=<addr>` (<https://www.consul.io/docs/commands/connect/envoy#http-addr>) parameter to use a different GRPC endpoint.
+It is a best practices to always talk to a local Consul agent, however you could address a different API endpoint using the `-http-addr=<addr>` (<https://www.consul.io/docs/commands/connect/envoy#http-addr>) parameter and the `-grpc-addr=<addr>` (<https://www.consul.io/docs/commands/connect/envoy#grpc-addr>) parameter to use a different GRPC endpoint.
 
 ## Contribute
 
