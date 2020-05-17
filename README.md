@@ -8,7 +8,7 @@ All Docker images can be found at: <https://hub.docker.com/r/timarenz/envoy-cons
 
 ## Usage
 
-This Docker images including both Consul and Envoy are a good way to run Envoy proxies on bare-metal, VMs or system where the sidecar proxies are not or can not be injected automatically.
+This Docker images including both Consul and Envoy and is a good way to run Envoy proxies on bare-metal, VMs or system where the sidecar proxies are not or can not be injected automatically.
 Also, as per [Consul version 1.8](https://www.hashicorp.com/blog/announcing-hashicorp-consul-1-8/), they can be used to run Ingress and Terminating Gateways.
 
 More information about the general usage can be found in the Consul Connect Envoy documentation: <https://www.consul.io/docs/commands/connect/envoy>
@@ -17,7 +17,6 @@ However, for a quick start you will find a couple of examples below.
 ### Run a basic sidecar proxy
 
 The sidecar Envoy process can be started with.
-
 
 ```bash
 docker run -d --network host --name db-sidecar-proxy timarenz/envoy-consul:v1.14.1_1.8.0-beta1 \
