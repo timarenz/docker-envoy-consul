@@ -1,0 +1,30 @@
+name: 'consul-1-9'
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        consul_version:
+          - "1.9.0"
+          - "1.9.1"
+          - "1.9.2"
+          - "1.9.3"
+        envoy_version:
+          - "1.13.6"
+          - "1.14.5"
+          - "1.15.2"
+          - "1.16.0"
+  
+    steps:
+      - name: Versions
+        run: >
+          echo "consul: $${{ matrix.consul_version }} ... envoy: $${{ matrix.envoy_version }}"
+        
+          
